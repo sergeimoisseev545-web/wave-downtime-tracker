@@ -628,7 +628,7 @@ body {
     pointer-events: none;
 }
 
-/* Радужная анимация для автора */
+
 .author-card::before {
     background: linear-gradient(
         90deg,
@@ -645,7 +645,7 @@ body {
     animation: rainbow 3s linear infinite;
 }
 
-/* Анимация в цветах Wave для ссылки */
+
 .wave-card::before {
     background: linear-gradient(
         90deg,
@@ -700,7 +700,7 @@ body {
     display: none;
 }
 
-/* Chat Section */
+
 .chat-section {
     background: rgba(53, 81, 104, 0.3);
     border: 1px solid rgba(147, 197, 253, 0.2);
@@ -1251,7 +1251,7 @@ body {
     }
 }
 
-/* FAQ Section */
+
 .faq-section {
     background: rgba(53, 81, 104, 0.3);
     border: 1px solid rgba(147, 197, 253, 0.2);
@@ -1380,7 +1380,7 @@ body {
     flex-shrink: 0;
 }
 
-/* Downgrade link styling */
+
 .downgrade-link {
     color: rgb(251, 191, 36);
     text-decoration: none;
@@ -1396,7 +1396,7 @@ body {
     text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
 }
 
-/* Responsive design */
+
 @media (max-width: 768px) {
     body {
         padding: 8px;
@@ -1407,7 +1407,7 @@ body {
         background-position: center;
         background-repeat: no-repeat;
     }
-    
+
     .container {
         max-width: calc(100vw - 16px);
         width: calc(100vw - 16px);
@@ -1415,26 +1415,26 @@ body {
         padding: 0;
         margin: 0 auto;
     }
-    
+
     .header {
         margin-bottom: 24px;
         gap: 16px;
     }
-    
+
     .logo {
         width: 80px;
         height: 80px;
     }
-    
+
     .header h1 {
         font-size: 28px;
         gap: 8px;
     }
-    
+
     .wave-title-logo {
         height: 32px;
     }
-    
+
     .status-card {
         padding: 48px 16px 24px 16px;
         margin-bottom: 16px;
@@ -1443,119 +1443,119 @@ body {
         overflow: hidden;
         box-sizing: border-box;
     }
-    
+
     .notification-bell-btn {
         width: 40px;
         height: 40px;
         top: 12px;
         left: 12px;
     }
-    
+
     .notification-bell-btn::before {
         font-size: 11px;
         padding: 6px 12px;
         bottom: calc(100% + 8px);
     }
-    
+
     .bell-icon {
         width: 20px;
         height: 20px;
     }
-    
+
     .wavetyan-sitting {
         width: 80px;
         top: -45px;
         right: 5px;
         z-index: 100;
     }
-    
+
     .decorative-cloud {
         width: 35px;
         height: 15px;
         z-index: 9998;
     }
-    
+
     .decorative-cloud-2 {
         width: 40px;
         height: 18px;
         z-index: 9998;
     }
-    
+
     .version-info {
         font-size: 13px;
         margin-bottom: 16px;
         padding: 0 8px;
         word-break: break-word;
     }
-    
+
     .status-text {
         font-size: 22px;
         padding: 0 8px;
         word-break: break-word;
     }
-    
+
     .status-emoji {
         width: 28px;
         height: 28px;
     }
-    
+
     .timer-section {
         margin-top: 20px;
     }
-    
+
     .timer-label {
         font-size: 14px;
     }
-    
+
     .timer {
         font-size: 36px;
         word-spacing: normal;
     }
-    
+
     .stats-container {
         flex-direction: column;
         gap: 12px;
         margin-bottom: 16px;
     }
-    
+
     .stat-card {
         padding: 16px;
         width: 100%;
         box-sizing: border-box;
     }
-    
+
     .stat-label {
         font-size: 13px;
     }
-    
+
     .stat-value {
         font-size: 24px;
     }
-    
+
     .credits-section {
         flex-direction: column;
         gap: 12px;
         margin-bottom: 16px;
     }
-    
+
     .credit-card {
         padding: 12px 16px;
     }
-    
+
     .avatar-video {
         width: 32px;
         height: 32px;
     }
-    
+
     .wave-logo {
         width: 32px;
         height: 32px;
     }
-    
+
     .credit-text {
         font-size: 14px;
     }
-    
+
     .chat-section {
         padding: 16px 12px;
         margin-bottom: 16px;
@@ -1564,81 +1564,81 @@ body {
         overflow: hidden;
         box-sizing: border-box;
     }
-    
+
     .chat-header h2 {
         font-size: 20px;
     }
-    
+
     .online-counter {
         font-size: 13px;
     }
-    
+
     .chat-nickname-setup {
         padding: 16px;
     }
-    
+
     .nickname-input-row {
         flex-direction: column;
         gap: 8px;
     }
-    
+
     #nicknameInput {
         width: 100%;
     }
-    
+
     #setNicknameBtn {
         width: 100%;
     }
-    
+
     .chat-welcome {
         padding: 12px 16px;
     }
-    
+
     .chat-messages {
         max-height: 300px;
         padding: 12px;
     }
-    
+
     .chat-message {
         padding: 10px 12px;
     }
-    
+
     .message-avatar {
         width: 32px;
         height: 32px;
         font-size: 16px;
     }
-    
+
     .message-content {
         gap: 6px;
     }
-    
+
     .message-author {
         font-size: 13px;
     }
-    
+
     .message-text {
         font-size: 14px;
     }
-    
+
     .message-timestamp {
         font-size: 10px;
     }
-    
+
     .chat-input-container {
         gap: 8px;
     }
-    
+
     #messageInput {
         font-size: 14px;
         padding: 10px 12px;
     }
-    
+
     #sendMessageBtn {
         padding: 10px 16px;
         font-size: 14px;
     }
-    
+
     .faq-section {
         padding: 16px 12px;
         margin-bottom: 16px;
@@ -1647,35 +1647,35 @@ body {
         overflow: hidden;
         box-sizing: border-box;
     }
-    
+
     .faq-section h2 {
         font-size: 20px;
         margin-bottom: 16px;
     }
-    
+
     .faq-question {
         padding: 14px 16px;
         font-size: 14px;
     }
-    
+
     .faq-item.active .faq-answer {
         padding: 14px 16px;
         font-size: 13px;
     }
-    
+
     .faq-footer p {
         font-size: 13px;
     }
-    
+
     .discord-link {
         font-size: 13px;
     }
-    
+
     .footer {
         padding: 16px;
         font-size: 12px;
     }
-    
+
     .site-branding {
         font-size: 14px;
         bottom: 10px;
@@ -1689,136 +1689,136 @@ body {
         background-size: cover;
         background-repeat: no-repeat;
     }
-    
+
     .container {
         max-width: calc(100vw - 12px);
         width: calc(100vw - 12px);
     }
-    
+
     .header {
         margin-bottom: 16px;
         gap: 12px;
     }
-    
+
     .logo {
         width: 60px;
         height: 60px;
     }
-    
+
     .header h1 {
         font-size: 20px;
     }
-    
+
     .wave-title-logo {
         height: 24px;
     }
-    
+
     .status-card {
         padding: 40px 12px 20px 12px;
     }
-    
+
     .notification-bell-btn {
         width: 36px;
         height: 36px;
         top: 10px;
         left: 10px;
     }
-    
+
     .bell-icon {
         width: 18px;
         height: 18px;
     }
-    
+
     .wavetyan-sitting {
         display: none;
     }
-    
+
     .decorative-cloud {
         display: none;
     }
-    
+
     .decorative-cloud-2 {
         display: none;
     }
-    
+
     .version-info {
         font-size: 12px;
         margin-bottom: 12px;
     }
-    
+
     .status-text {
         font-size: 18px;
     }
-    
+
     .status-emoji {
         width: 22px;
         height: 22px;
     }
-    
+
     .timer {
         font-size: 28px;
     }
-    
+
     .stat-label {
         font-size: 12px;
     }
-    
+
     .stat-value {
         font-size: 20px;
     }
-    
+
     .chat-header h2 {
         font-size: 18px;
     }
-    
+
     .chat-messages {
         max-height: 200px;
         padding: 10px;
     }
-    
+
     .message-avatar {
         width: 28px;
         height: 28px;
         font-size: 14px;
     }
-    
+
     .message-author {
         font-size: 12px;
     }
-    
+
     .message-text {
         font-size: 13px;
     }
-    
+
     #messageInput {
         font-size: 13px;
         padding: 8px 10px;
     }
-    
+
     #sendMessageBtn {
         padding: 8px 12px;
         font-size: 13px;
     }
-    
+
     .faq-section h2 {
         font-size: 18px;
     }
-    
+
     .faq-question {
         padding: 12px 14px;
         font-size: 13px;
     }
-    
+
     .faq-item.active .faq-answer {
         padding: 12px 14px;
         font-size: 12px;
     }
-    
+
     .footer {
         font-size: 11px;
         padding: 12px;
     }
-    
+
     .notification-bell-btn::before {
         font-size: 9px;
         padding: 4px 6px;

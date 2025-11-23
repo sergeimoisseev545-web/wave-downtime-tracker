@@ -1,5 +1,3 @@
-// Chat client-side logic
-
 let socket;
 let currentUser = null;
 let isAdmin = false;
@@ -8,7 +6,6 @@ let browserFingerprint = null;
 let currentDeviceCode = null;
 let blurTimeout = null;
 
-// Cookie helpers with proper cross-domain support
 function setCookie(name, value, days = 365) {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
@@ -34,14 +31,13 @@ function deleteCookie(name) {
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;${sameSite}`;
 }
 
-// Также используем localStorage как fallback
 function saveSessionToken(token) {
     try {
         setCookie('chatSession', token, 365);
         localStorage.setItem('chatSessionToken', token);
         sessionStorage.setItem('chatSessionToken', token);
     } catch (error) {
-        // Silent fail
+
     }
 }
 
@@ -51,11 +47,11 @@ function getSessionToken() {
         const fromLocal = localStorage.getItem('chatSessionToken');
         const fromSession = sessionStorage.getItem('chatSessionToken');
         const token = fromCookie || fromLocal || fromSession;
-        
+
         if (token && (!fromCookie || !fromLocal || !fromSession)) {
             saveSessionToken(token);
         }
-        
+
         return token;
     } catch (error) {
         return null;
@@ -68,20 +64,18 @@ function deleteSessionToken() {
         localStorage.removeItem('chatSessionToken');
         sessionStorage.removeItem('chatSessionToken');
     } catch (error) {
-        // Silent fail
+
     }
 }
 
-// System message queue
 const systemMessageQueue = [];
 let activeSystemMessages = 0;
 const MAX_CONCURRENT_SYSTEM_MESSAGES = 3;
 let isProcessingQueue = false;
 
-// Generate browser fingerprint
 async function generateFingerprint() {
     const components = [];
-    
+
     try {
         components.push((screen?.width || 0) + 'x' + (screen?.height || 0));
         components.push(screen?.colorDepth || 0);
@@ -93,9 +87,9 @@ async function generateFingerprint() {
         components.push(navigator?.deviceMemory || 'unknown');
         components.push(navigator?.maxTouchPoints || 0);
     } catch (e) {
-        // Silent fail
+
     }
-    
+
     try {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -109,7 +103,7 @@ async function generateFingerprint() {
     } catch (e) {
         components.push('canvas-error');
     }
-    
+
     try {
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -123,33 +117,32 @@ async function generateFingerprint() {
     } catch (e) {
         components.push('webgl-error');
     }
-    
+
     const fingerprintString = components.join('|');
     const encoder = new TextEncoder();
     const data = encoder.encode(fingerprintString);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    
+
     return hashHex;
 }
 
-// Connect to chat server
 async function initializeChat() {
     try {
         browserFingerprint = await generateFingerprint();
     } catch (error) {
         browserFingerprint = 'fallback-' + Date.now() + '-' + Math.random();
     }
-    
+
     let serverUrl;
-    
+
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         serverUrl = 'http://localhost:3000';
     } else {
         serverUrl = 'https://wave-chat-server.onrender.com';
     }
-    
+
     try {
         socket = io(serverUrl, {
             transports: ['websocket', 'polling'],
@@ -159,7 +152,7 @@ async function initializeChat() {
             timeout: 20000,
             withCredentials: true
         });
-        
+
         setupSocketListeners();
     } catch (error) {
         alert('Failed to initialize chat');
@@ -171,31 +164,31 @@ function setupSocketListeners() {
         if (browserFingerprint) {
             socket.emit('setFingerprint', browserFingerprint);
         }
-        
+
         loadSavedNickname();
     });
-    
+
     socket.on('connect_error', (error) => {
-        // Silent
+
     });
-    
+
     socket.on('connect_timeout', () => {
-        // Silent
+
     });
-    
+
     socket.on('error', (error) => {
-        // Silent
+
     });
-    
+
     socket.on('disconnect', (reason) => {
-        // Silent
+
     });
-    
+
     socket.on('userJoined', (data) => {
         showSystemMessage(`${data.nickname} joined the chat`, 'join');
         updateOnlineCount(data.onlineCount);
     });
-    
+
     socket.on('userLeft', (data) => {
         if (data.banned) {
             showSystemMessage(`${data.nickname} banned from chat`, 'banned');
@@ -204,33 +197,33 @@ function setupSocketListeners() {
         }
         updateOnlineCount(data.onlineCount);
     });
-    
+
     socket.on('message', (data) => {
         displayMessage(data);
     });
-    
+
     socket.on('messageHistory', (messages) => {
         const chatMessages = document.getElementById('chatMessages');
         chatMessages.innerHTML = '';
         messages.forEach(msg => displayMessage(msg));
         scrollToBottom();
     });
-    
+
     socket.on('onlineCount', (count) => {
         updateOnlineCount(count);
     });
-    
+
     socket.on('error', (error) => {
         showError(error.message);
     });
-    
+
     socket.on('nicknameAccepted', (data) => {
         currentUser = data.user;
         isAdmin = data.isAdmin;
-        
+
         if (data.sessionToken) {
             saveSessionToken(data.sessionToken);
-            
+
             setTimeout(() => {
                 const savedToken = getSessionToken();
                 if (savedToken !== data.sessionToken) {
@@ -238,7 +231,7 @@ function setupSocketListeners() {
                 }
             }, 100);
         }
-        
+
         if (data.deviceCode) {
             currentDeviceCode = data.deviceCode;
             updateDeviceCodeDisplay(data.deviceCode);
@@ -246,7 +239,7 @@ function setupSocketListeners() {
             currentDeviceCode = null;
             updateDeviceCodeDisplay(null);
         }
-        
+
         document.getElementById('welcomeNickname').textContent = data.user.nickname;
         showChatInterface();
         if (isAdmin && !data.isRejoin && !data.isDeviceLogin) {
@@ -256,13 +249,13 @@ function setupSocketListeners() {
             showSystemMessage('Logged in from another device successfully! Your device code has been deleted for security.', 'info');
         }
     });
-    
+
     socket.on('sessionValid', (data) => {
         if (data && data.userId && data.nickname) {
             if (data.sessionToken) {
                 saveSessionToken(data.sessionToken);
             }
-            
+
             const sessionToken = getSessionToken();
             if (sessionToken) {
                 socket.emit('rejoin', {
@@ -271,12 +264,12 @@ function setupSocketListeners() {
             }
         }
     });
-    
+
     socket.on('invalidSession', () => {
         deleteSessionToken();
         showNicknameSetup();
     });
-    
+
     socket.on('banned', () => {
         showError('You have been banned from the chat');
         deleteSessionToken();
@@ -285,7 +278,7 @@ function setupSocketListeners() {
         document.getElementById('welcomeNickname').textContent = '';
         showNicknameSetup();
     });
-    
+
     socket.on('deviceCodeGenerated', (data) => {
         if (data.deviceCode) {
             currentDeviceCode = data.deviceCode;
@@ -293,13 +286,13 @@ function setupSocketListeners() {
             showSystemMessage('Device code generated successfully! Click to reveal.', 'info');
         }
     });
-    
+
     socket.on('deviceCodeDeleted', (data) => {
         currentDeviceCode = null;
         updateDeviceCodeDisplay(null);
         showSystemMessage(`Device Code deleted: ${data.reason}`, 'info');
     });
-    
+
     socket.on('messageDeleted', (messageId) => {
         const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
         if (messageElement) {
@@ -310,7 +303,7 @@ function setupSocketListeners() {
 
 function loadSavedNickname() {
     const sessionToken = getSessionToken();
-    
+
     if (sessionToken) {
         socket.emit('rejoin', {
             sessionToken: sessionToken
@@ -318,9 +311,8 @@ function loadSavedNickname() {
     }
 }
 
-// Вспомогательные функции для совместимости
 function saveNickname(nickname, userId, avatarHue) {
-    // Session token уже сохранен в cookie/localStorage в обработчике nicknameAccepted
+
 }
 
 function clearNickname() {
@@ -330,26 +322,24 @@ function clearNickname() {
     document.getElementById('welcomeNickname').textContent = '';
 }
 
-// Nickname validation
 function validateNickname(nickname) {
     const englishOnly = /^[a-zA-Z0-9_]+$/;
-    
+
     if (!nickname || nickname.trim().length < 3) {
         return 'Nickname must be at least 3 characters';
     }
-    
+
     if (nickname.length > 20) {
         return 'Nickname must be at most 20 characters';
     }
-    
+
     if (!englishOnly.test(nickname)) {
         return 'Nickname must contain only English letters, numbers, and underscores';
     }
-    
+
     return null;
 }
 
-// UI Functions
 function showNicknameSetup() {
     document.getElementById('nicknameSetup').classList.remove('hidden');
     document.getElementById('chatWelcome').classList.add('hidden');
@@ -362,43 +352,43 @@ function showChatInterface() {
     const chatContainer = document.getElementById('chatContainer');
     const sendBtn = document.getElementById('sendMessageBtn');
     const messageInput = document.getElementById('messageInput');
-    
+
     if (!nicknameSetup || !chatWelcome || !chatContainer) {
         alert('Error: Chat elements not found. Please refresh the page.');
         return;
     }
-    
+
     nicknameSetup.style.cssText = 'display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; opacity: 0 !important; position: absolute !important;';
     nicknameSetup.classList.add('hidden');
     nicknameSetup.setAttribute('aria-hidden', 'true');
-    
+
     chatWelcome.style.cssText = 'display: flex !important; visibility: visible !important; opacity: 1 !important;';
     chatWelcome.classList.remove('hidden');
     chatWelcome.setAttribute('aria-hidden', 'false');
-    
+
     const welcomeLeft = document.getElementById('welcomeLeft');
     if (welcomeLeft) {
         welcomeLeft.classList.remove('hidden');
         welcomeLeft.style.display = 'block';
     }
-    
+
     chatContainer.classList.remove('hidden');
     chatContainer.style.cssText = 'display: flex !important; visibility: visible !important; opacity: 1 !important; flex-direction: column !important;';
-    
+
     if (sendBtn) {
         sendBtn.disabled = false;
         sendBtn.style.pointerEvents = 'auto';
     }
-    
+
     if (messageInput) {
         messageInput.disabled = false;
     }
 }
 
 function showError(message) {
-    // Check if user is in chat (has nickname set)
+
     if (currentUser) {
-        // Show error under chat input
+
         const chatErrorElement = document.getElementById('chatErrorMessage');
         chatErrorElement.textContent = message;
         chatErrorElement.classList.remove('hidden');
@@ -406,7 +396,7 @@ function showError(message) {
             chatErrorElement.classList.add('hidden');
         }, 5000);
     } else {
-        // Show error in nickname setup
+
         const errorElement = document.getElementById('nicknameError');
         errorElement.textContent = message;
         errorElement.style.display = 'block';
@@ -425,7 +415,7 @@ function displayMessage(data) {
     const messageDiv = document.createElement('div');
     messageDiv.className = 'chat-message';
     messageDiv.setAttribute('data-message-id', data.id);
-    
+
     if (data.type === 'system') {
         messageDiv.classList.add('system-message');
         if (data.subType === 'join') {
@@ -436,8 +426,7 @@ function displayMessage(data) {
             messageDiv.classList.add('system-banned');
         }
         messageDiv.innerHTML = `<span class="system-text">${escapeHtml(data.message)}</span>`;
-        
-        // Удаляем системное сообщение через 3 секунды
+
         setTimeout(() => {
             if (messageDiv && messageDiv.parentNode) {
                 messageDiv.style.transition = 'opacity 0.3s ease-out';
@@ -454,15 +443,14 @@ function displayMessage(data) {
         if (isOwnMessage) {
             messageDiv.classList.add('own-message');
         }
-        
+
         const isMefisto = data.nickname.toLowerCase() === 'mefisto';
         const avatarStyle = `filter: hue-rotate(${data.avatarHue}deg) saturate(1.5);`;
-        
-        // Для Mefisto используем видео аватар
-        const avatarHTML = isMefisto 
+
+        const avatarHTML = isMefisto
             ? `<video src="mefistoavatar.mp4" class="chat-avatar-video" autoplay loop muted playsinline></video>`
             : `<img src="userschaticons.png" class="chat-avatar" style="${avatarStyle}" alt="${escapeHtml(data.nickname)}">`;
-        
+
         messageDiv.innerHTML = `
             ${avatarHTML}
             <div class="message-content">
@@ -475,56 +463,49 @@ function displayMessage(data) {
             </div>
         `;
     }
-    
+
     chatMessages.appendChild(messageDiv);
     scrollToBottom();
 }
 
 function showSystemMessage(message, type = 'info') {
     const systemMsg = {
-        id: Date.now() + Math.random(), // Уникальный ID
+        id: Date.now() + Math.random(),
         type: 'system',
         subType: type,
         message: message,
         timestamp: Date.now()
     };
-    
-    // Добавляем в очередь
+
     systemMessageQueue.push(systemMsg);
-    
-    // Запускаем обработку очереди
+
     processSystemMessageQueue();
 }
 
 function processSystemMessageQueue() {
-    // Если уже обрабатываем или достигли лимита - выходим
+
     if (isProcessingQueue || activeSystemMessages >= MAX_CONCURRENT_SYSTEM_MESSAGES) {
         return;
     }
-    
-    // Если очередь пуста - выходим
+
     if (systemMessageQueue.length === 0) {
         return;
     }
-    
+
     isProcessingQueue = true;
-    
-    // Берем первое сообщение из очереди
+
     const message = systemMessageQueue.shift();
-    
-    // Увеличиваем счетчик активных сообщений
+
     activeSystemMessages++;
-    
-    // Отображаем сообщение
+
     displayMessage(message);
-    
-    // Через 3 секунды уменьшаем счетчик и обрабатываем следующее
+
     setTimeout(() => {
         activeSystemMessages--;
         isProcessingQueue = false;
-        processSystemMessageQueue(); // Обрабатываем следующее сообщение
-    }, 3100); // Чуть больше 3 секунд, чтобы сообщение успело исчезнуть
-    
+        processSystemMessageQueue();
+    }, 3100);
+
     isProcessingQueue = false;
 }
 
@@ -539,15 +520,12 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Функция для автоматического добавления ссылок на слова downgrade
 function linkifyDowngrade(text) {
-    // Экранируем HTML перед обработкой
+
     const escapedText = escapeHtml(text);
-    
-    // Регулярное выражение для поиска всех форм слова downgrade (регистронезависимо)
+
     const downgradeRegex = /\b(downgrad(e|ed|es|ing))\b/gi;
-    
-    // Заменяем все вхождения на ссылки
+
     return escapedText.replace(downgradeRegex, '<a href="/downgrade" class="downgrade-link" target="_blank">$1</a>');
 }
 
@@ -558,16 +536,15 @@ function formatTime(timestamp) {
     return `${hours}:${minutes}`;
 }
 
-// Event Handlers
 document.getElementById('setNicknameBtn').addEventListener('click', () => {
     const nickname = document.getElementById('nicknameInput').value.trim();
     const error = validateNickname(nickname);
-    
+
     if (error) {
         showError(error);
         return;
     }
-    
+
     socket.emit('setNickname', nickname);
 });
 
@@ -577,11 +554,10 @@ document.getElementById('nicknameInput').addEventListener('keypress', (e) => {
     }
 });
 
-// Add both click and touchstart for iOS compatibility
 const sendBtn = document.getElementById('sendMessageBtn');
 sendBtn.addEventListener('click', sendMessage);
 sendBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // Prevent double-firing on iOS
+    e.preventDefault();
     sendMessage();
 }, { passive: false });
 
@@ -595,27 +571,27 @@ function sendMessage() {
     if (messageCooldown && !isAdmin) {
         return;
     }
-    
+
     const messageInput = document.getElementById('messageInput');
     const message = messageInput.value.trim();
-    
+
     if (!message || message.length > 100) {
         return;
     }
-    
+
     if (!socket || !socket.connected) {
         showError('Not connected to chat server');
         return;
     }
-    
+
     if (!currentUser) {
         showError('You must set a nickname first');
         return;
     }
-    
+
     socket.emit('message', message);
     messageInput.value = '';
-    
+
     if (!isAdmin) {
         startCooldown();
     }
@@ -626,14 +602,14 @@ function startCooldown() {
     const cooldownElement = document.getElementById('messageCooldown');
     const sendButton = document.getElementById('sendMessageBtn');
     const messageInput = document.getElementById('messageInput');
-    
+
     sendButton.disabled = true;
     messageInput.disabled = true;
-    
+
     let timeLeft = 5;
     cooldownElement.textContent = `Wait ${timeLeft}s`;
     cooldownElement.style.display = 'block';
-    
+
     const interval = setInterval(() => {
         timeLeft--;
         if (timeLeft > 0) {
@@ -650,13 +626,12 @@ function startCooldown() {
 
 function banUser(userId, nickname) {
     if (!isAdmin) return;
-    
+
     if (confirm(`Ban ${nickname} permanently? This will delete all their messages.`)) {
         socket.emit('banUser', userId);
     }
 }
 
-// Device Code функции
 function updateDeviceCodeDisplay(code) {
     const deviceCodeElement = document.getElementById('deviceCodeValue');
     if (deviceCodeElement) {
@@ -679,20 +654,17 @@ function toggleDeviceCodeBlur() {
         showSystemMessage('Generate a device code first!', 'info');
         return;
     }
-    
+
     const deviceCodeElement = document.getElementById('deviceCodeValue');
     if (!deviceCodeElement) return;
-    
-    // Снимаем blur
+
     deviceCodeElement.classList.remove('blurred');
     deviceCodeElement.classList.add('revealed');
-    
-    // Очищаем старый таймер
+
     if (blurTimeout) {
         clearTimeout(blurTimeout);
     }
-    
-    // Возвращаем blur через 3 секунды
+
     blurTimeout = setTimeout(() => {
         deviceCodeElement.classList.remove('revealed');
         deviceCodeElement.classList.add('blurred');
@@ -704,7 +676,7 @@ function copyDeviceCode() {
         showSystemMessage('Generate a device code first!', 'info');
         return;
     }
-    
+
     navigator.clipboard.writeText(currentDeviceCode).then(() => {
         showSystemMessage('Device code copied to clipboard!', 'info');
     }).catch(err => {
@@ -717,34 +689,33 @@ function generateDeviceCode() {
         showError('Not connected to server');
         return;
     }
-    
+
     socket.emit('generateDeviceCode');
 }
 
-// Initialize chat when page loads
 document.addEventListener('DOMContentLoaded', () => {
     try {
         initializeChat();
     } catch (error) {
         alert('Chat initialization failed');
     }
-    
+
     const deviceCodeValue = document.getElementById('deviceCodeValue');
     const copyBtn = document.getElementById('copyDeviceCodeBtn');
     const generateBtn = document.getElementById('generateDeviceCodeBtn');
-    
+
     if (deviceCodeValue) {
         deviceCodeValue.addEventListener('click', toggleDeviceCodeBlur);
     }
-    
+
     if (copyBtn) {
         copyBtn.addEventListener('click', copyDeviceCode);
     }
-    
+
     if (generateBtn) {
         generateBtn.addEventListener('click', generateDeviceCode);
     }
-    
+
     window.addEventListener('beforeunload', () => {
         if (socket && socket.connected) {
             socket.disconnect();
