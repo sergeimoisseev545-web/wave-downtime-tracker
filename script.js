@@ -85,7 +85,6 @@ async function loadSavedData() {
 
         updateStatsDisplay();
     } catch (e) {
-        console.error('Error loading saved data:', e);
     }
 }
 
@@ -109,10 +108,8 @@ async function saveData() {
                 body: JSON.stringify(dataToSave)
             });
         } catch (error) {
-            console.warn('Failed to save cache to MongoDB:', error);
         }
     } catch (e) {
-        console.error('Error saving data:', e);
     }
 }
 
@@ -124,7 +121,6 @@ async function loadCacheFromDB() {
             return cache;
         }
     } catch (error) {
-        console.warn('Failed to load cache from MongoDB:', error);
     }
     return null;
 }
@@ -170,11 +166,9 @@ async function fetchRobloxVersion() {
             return data;
         }
 
-        console.warn('Proxy failed, trying direct access with fallback...');
         return await fetchWithFallback('/api/versions/current');
 
     } catch (error) {
-        console.error('Error fetching Roblox version from proxy:', error);
 
         return await fetchWithFallback('/api/versions/current');
     }
@@ -190,11 +184,9 @@ async function fetchWaveStatus() {
             return data;
         }
 
-        console.warn('Proxy failed, trying direct access with fallback...');
         return await fetchWithFallback('/api/status/exploits/wave');
 
     } catch (error) {
-        console.error('Error fetching Wave status from proxy:', error);
 
         return await fetchWithFallback('/api/status/exploits/wave');
     }
@@ -206,7 +198,6 @@ function parseApiDate(dateString) {
         const cleanDate = dateString.replace(' UTC', '').replace(',', '');
         return new Date(cleanDate + ' UTC').getTime();
     } catch (e) {
-        console.error('Error parsing date:', e);
         return null;
     }
 }
@@ -301,9 +292,7 @@ async function updateUI(data) {
             const warningEl = document.getElementById('downgradeWarning');
             if (warningEl) {
                 warningEl.style.display = 'block';
-                console.log('✅ Downgrade warning shown');
             } else {
-                console.error('❌ downgradeWarning element not found');
             }
 
             if (currentState.apiDownSince) {
@@ -313,7 +302,6 @@ async function updateUI(data) {
             const warningEl = document.getElementById('downgradeWarning');
             if (warningEl) {
                 warningEl.style.display = 'none';
-                console.log('ℹ️ Downgrade warning hidden');
             }
             statusTextElement.innerHTML = 'WAVE IS UP! <img src="happyemoji.webp" alt="Happy" class="status-emoji">';
             statusTextElement.className = 'status-text status-up';
@@ -416,9 +404,7 @@ async function updateUI(data) {
         const warningEl = document.getElementById('downgradeWarning');
         if (warningEl) {
             warningEl.style.display = 'block';
-            console.log('✅ Downgrade warning shown (main UI)');
         } else {
-            console.error('❌ downgradeWarning element not found (main UI)');
         }
         updateTimer();
     } else {
@@ -427,7 +413,6 @@ async function updateUI(data) {
         const warningEl = document.getElementById('downgradeWarning');
         if (warningEl) {
             warningEl.style.display = 'none';
-            console.log('ℹ️ Downgrade warning hidden (main UI)');
         }
 
         if (currentState.lastDowntimeDuration > 0) {
@@ -502,7 +487,6 @@ function initNotifications() {
         notificationAudio.load();
 
         notificationAudio.addEventListener('error', (e) => {
-            console.error('Audio loading error:', e);
         });
     }
 
@@ -554,7 +538,6 @@ function showWaveUpNotification() {
         const playPromise = notificationAudio.play();
         if (playPromise !== undefined) {
             playPromise.catch(err => {
-                console.error('Failed to play notification sound:', err);
             });
         }
     }
@@ -585,7 +568,6 @@ function initSiteBrandingCopy() {
                 siteBranding.setAttribute('data-tooltip', originalTooltip);
             }, 2000);
         } catch (err) {
-            console.error('Failed to copy:', err);
         }
     });
 }
@@ -598,8 +580,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const warningEl = document.getElementById('downgradeWarning');
     if (warningEl) {
         warningEl.style.display = 'block';
-        console.log('✅ Downgrade warning force-shown on page load');
     } else {
-        console.error('❌ downgradeWarning element not found on DOMContentLoaded');
     }
 });
