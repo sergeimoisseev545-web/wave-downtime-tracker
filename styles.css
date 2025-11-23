@@ -532,7 +532,7 @@ body {
         transform: scale(1);
     }
     50% {
-        transform: scale(1.0075);
+        transform: scale(1.0015);
     }
 }
 
