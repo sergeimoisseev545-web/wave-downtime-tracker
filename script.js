@@ -290,9 +290,13 @@ async function updateUI(data) {
             timerSectionElement.classList.remove('hidden');
             timerLabelElement.textContent = 'Down for';
             const warningEl = document.getElementById('downgradeWarning');
+            const buttonEl = document.getElementById('downgradeButtonContainer');
             if (warningEl) {
                 warningEl.style.display = 'block';
             } else {
+            }
+            if (buttonEl) {
+                buttonEl.style.display = 'block';
             }
 
             if (currentState.apiDownSince) {
@@ -300,8 +304,12 @@ async function updateUI(data) {
             }
         } else {
             const warningEl = document.getElementById('downgradeWarning');
+            const buttonEl = document.getElementById('downgradeButtonContainer');
             if (warningEl) {
                 warningEl.style.display = 'none';
+            }
+            if (buttonEl) {
+                buttonEl.style.display = 'none';
             }
             statusTextElement.innerHTML = 'WAVE IS UP! <img src="happyemoji.webp" alt="Happy" class="status-emoji">';
             statusTextElement.className = 'status-text status-up';
@@ -402,17 +410,25 @@ async function updateUI(data) {
         timerSectionElement.classList.remove('hidden');
         timerLabelElement.textContent = 'Down for';
         const warningEl = document.getElementById('downgradeWarning');
+        const buttonEl = document.getElementById('downgradeButtonContainer');
         if (warningEl) {
             warningEl.style.display = 'block';
         } else {
+        }
+        if (buttonEl) {
+            buttonEl.style.display = 'block';
         }
         updateTimer();
     } else {
         statusTextElement.innerHTML = 'WAVE IS UP! <img src="happyemoji.webp" alt="Happy" class="status-emoji">';
         statusTextElement.className = 'status-text status-up';
         const warningEl = document.getElementById('downgradeWarning');
+        const buttonEl = document.getElementById('downgradeButtonContainer');
         if (warningEl) {
             warningEl.style.display = 'none';
+        }
+        if (buttonEl) {
+            buttonEl.style.display = 'none';
         }
 
         if (currentState.lastDowntimeDuration > 0) {
@@ -578,8 +594,12 @@ initSiteBrandingCopy();
 
 document.addEventListener('DOMContentLoaded', () => {
     const warningEl = document.getElementById('downgradeWarning');
+    const buttonEl = document.getElementById('downgradeButtonContainer');
     if (warningEl) {
         warningEl.style.display = 'block';
     } else {
+    }
+    if (buttonEl) {
+        buttonEl.style.display = 'block';
     }
 });
