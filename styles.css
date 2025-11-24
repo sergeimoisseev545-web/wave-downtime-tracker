@@ -1283,8 +1283,8 @@ body {
 .sticker-btn {
     position: relative;
     padding: 8px;
-    background: rgba(15, 23, 30, 0.8);
-    border: 2px solid rgba(147, 197, 253, 0.3);
+    background: rgb(147, 197, 253);
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s;
@@ -1296,22 +1296,22 @@ body {
 }
 
 .sticker-btn:hover {
-    border-color: rgba(147, 197, 253, 0.5);
+    background: rgb(191, 219, 254);
 }
 
 .sticker-btn.active {
-    border-color: rgb(147, 197, 253);
+    background: rgb(191, 219, 254);
 }
 
 .sticker-btn-icon {
     width: 24px;
     height: 24px;
-    filter: brightness(0) saturate(100%) invert(79%) sepia(18%) saturate(927%) hue-rotate(178deg) brightness(99%) contrast(96%);
+    filter: brightness(0) saturate(100%) invert(8%) sepia(12%) saturate(1729%) hue-rotate(173deg) brightness(96%) contrast(96%);
     transition: filter 0.3s ease;
 }
 
 .sticker-btn.active .sticker-btn-icon {
-    filter: brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1000%) hue-rotate(178deg) brightness(99%) contrast(96%);
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(238deg) brightness(103%) contrast(103%);
 }
 
 .sticker-picker {
