@@ -222,11 +222,12 @@
                 
                 // Position prompt above the notification button
                 const btnRect = notificationBtn.getBoundingClientRect();
-                const promptWidth = 180; // approximate width
-                const promptHeight = 50; // approximate height
+                const promptRect = notificationPrompt.getBoundingClientRect();
+                const promptWidth = promptRect.width || 180;
+                const promptHeight = promptRect.height || 50;
                 
                 notificationPrompt.style.top = (btnRect.top - promptHeight - 10) + 'px';
-                notificationPrompt.style.left = (btnRect.left + btnRect.width / 2 - promptWidth / 2) + 'px';
+                notificationPrompt.style.left = (btnRect.left + (btnRect.width / 2) - (promptWidth / 2)) + 'px';
                 
                 notificationPrompt.classList.add('visible');
                 bellIcon.classList.add('ringing');
@@ -243,11 +244,12 @@
         function updatePromptPosition() {
             if (isPromptActive) {
                 const btnRect = notificationBtn.getBoundingClientRect();
-                const promptWidth = 180;
-                const promptHeight = 50;
+                const promptRect = notificationPrompt.getBoundingClientRect();
+                const promptWidth = promptRect.width || 180;
+                const promptHeight = promptRect.height || 50;
                 
                 notificationPrompt.style.top = (btnRect.top - promptHeight - 10) + 'px';
-                notificationPrompt.style.left = (btnRect.left + btnRect.width / 2 - promptWidth / 2) + 'px';
+                notificationPrompt.style.left = (btnRect.left + (btnRect.width / 2) - (promptWidth / 2)) + 'px';
             }
         }
         
