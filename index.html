@@ -219,6 +219,15 @@
         function showNotificationPrompt() {
             if (!hasHoveredNotificationBtn && !notificationBtn.classList.contains('active')) {
                 isPromptActive = true;
+                
+                // Position prompt above the notification button
+                const btnRect = notificationBtn.getBoundingClientRect();
+                const promptWidth = 180; // approximate width
+                const promptHeight = 50; // approximate height
+                
+                notificationPrompt.style.top = (btnRect.top - promptHeight - 10) + 'px';
+                notificationPrompt.style.left = (btnRect.left + btnRect.width / 2 - promptWidth / 2) + 'px';
+                
                 notificationPrompt.classList.add('visible');
                 bellIcon.classList.add('ringing');
                 
@@ -229,6 +238,21 @@
                 }, 3000);
             }
         }
+        
+        // Update prompt position on scroll/resize
+        function updatePromptPosition() {
+            if (isPromptActive) {
+                const btnRect = notificationBtn.getBoundingClientRect();
+                const promptWidth = 180;
+                const promptHeight = 50;
+                
+                notificationPrompt.style.top = (btnRect.top - promptHeight - 10) + 'px';
+                notificationPrompt.style.left = (btnRect.left + btnRect.width / 2 - promptWidth / 2) + 'px';
+            }
+        }
+        
+        window.addEventListener('scroll', updatePromptPosition);
+        window.addEventListener('resize', updatePromptPosition);
         
         // Start showing prompts every 10 seconds
         if (!notificationBtn.classList.contains('active')) {

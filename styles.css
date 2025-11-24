@@ -265,8 +265,8 @@ body {
 
 .notification-prompt {
     position: fixed;
-    top: 80px;
-    left: 20px;
+    top: 0;
+    left: 0;
     background: rgba(147, 197, 253, 0.95);
     color: rgb(15, 23, 36);
     padding: 12px 20px;
@@ -280,6 +280,7 @@ body {
     transform: translateY(-10px);
     transition: all 0.3s ease;
     pointer-events: none;
+    white-space: nowrap;
 }
 
 .notification-prompt.visible {
@@ -288,16 +289,17 @@ body {
     transform: translateY(0);
 }
 
-.notification-prompt::before {
+.notification-prompt::after {
     content: '';
     position: absolute;
-    top: -8px;
-    left: 24px;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-bottom: 8px solid rgba(147, 197, 253, 0.95);
+    border-top: 8px solid rgba(147, 197, 253, 0.95);
 }
 
 .bell-icon {
