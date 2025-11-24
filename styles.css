@@ -1613,9 +1613,9 @@ body {
 }
 
 .wave-card-tooltip {
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: absolute;
+    bottom: calc(100% + 16px);
+    left: 50%;
     transform: translateX(-50%) scale(0.7);
     transform-origin: center bottom;
     width: 400px;
