@@ -277,8 +277,7 @@ body {
     z-index: 9999;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
     pointer-events: none;
     white-space: nowrap;
 }
@@ -286,7 +285,6 @@ body {
 .notification-prompt.visible {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
 }
 
 .notification-prompt::after {
