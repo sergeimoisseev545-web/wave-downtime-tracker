@@ -244,7 +244,24 @@
             tooltip.style.left = (rect.left + rect.width / 2) + 'px';
         }
         
+        let hoverTimeout;
+        
+        function hideTooltip() {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = setTimeout(() => {
+                if (!isHovering) {
+                    tooltip.classList.remove('visible');
+                    if (isPlaying) {
+                        video.pause();
+                        audio.pause();
+                        isPlaying = false;
+                    }
+                }
+            }, 200);
+        }
+        
         waveCard.addEventListener('mouseenter', async () => {
+            clearTimeout(hoverTimeout);
             isHovering = true;
             updateTooltipPosition();
             tooltip.classList.add('visible');
@@ -269,33 +286,41 @@
         
         waveCard.addEventListener('mouseleave', () => {
             isHovering = false;
-            
-            setTimeout(() => {
-                if (!isHovering && isPlaying) {
-                    tooltip.classList.remove('visible');
-                    video.pause();
-                    audio.pause();
-                    isPlaying = false;
-                }
-            }, 300);
+            hideTooltip();
         });
         
         // Keep tooltip visible when hovering over it
         tooltip.addEventListener('mouseenter', () => {
+            clearTimeout(hoverTimeout);
             isHovering = true;
         });
         
         tooltip.addEventListener('mouseleave', () => {
             isHovering = false;
-            tooltip.classList.remove('visible');
-            
-            setTimeout(() => {
-                if (!isHovering && isPlaying) {
-                    video.pause();
-                    audio.pause();
-                    isPlaying = false;
+            hideTooltip();
+        });
+        
+        // Fallback: hide tooltip if mouse leaves both elements
+        document.addEventListener('mousemove', (e) => {
+            if (tooltip.classList.contains('visible')) {
+                const tooltipRect = tooltip.getBoundingClientRect();
+                const cardRect = waveCard.getBoundingClientRect();
+                
+                const isOverTooltip = e.clientX >= tooltipRect.left && 
+                                     e.clientX <= tooltipRect.right && 
+                                     e.clientY >= tooltipRect.top && 
+                                     e.clientY <= tooltipRect.bottom;
+                
+                const isOverCard = e.clientX >= cardRect.left && 
+                                  e.clientX <= cardRect.right && 
+                                  e.clientY >= cardRect.top && 
+                                  e.clientY <= cardRect.bottom;
+                
+                if (!isOverTooltip && !isOverCard) {
+                    isHovering = false;
+                    hideTooltip();
                 }
-            }, 300);
+            }
         });
         
         // Keep video and audio in sync
