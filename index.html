@@ -76,18 +76,6 @@
             <a href="https://getwave.gg" target="_blank" class="credit-card wave-card">
                 <img src="wavebluelogo.webp" alt="Wave Logo" class="wave-logo">
                 <span class="credit-text">Get Wave!</span>
-                <!-- Video tooltip for wave-card -->
-                <div id="waveCardTooltip" class="wave-card-tooltip">
-                    <video id="waveCardVideo" preload="auto" muted>
-                        <source src="getwaveedit.mp4" type="video/mp4">
-                    </video>
-                    <audio id="waveCardAudio" preload="auto">
-                        <source src="getwaveeditsound.m4a" type="audio/mp4">
-                    </audio>
-                    <a href="https://www.youtube.com/watch?v=vr9FLaC3BaI" target="_blank" class="tooltip-link-icon">
-                        <img src="link.png" alt="Link">
-                    </a>
-                </div>
             </a>
         </div>
         
@@ -222,6 +210,19 @@
         <source src="notification.mp3" type="audio/mpeg">
     </audio>
     
+    <!-- Video tooltip for wave-card -->
+    <div id="waveCardTooltip" class="wave-card-tooltip">
+        <video id="waveCardVideo" preload="auto" muted>
+            <source src="getwaveedit.mp4" type="video/mp4">
+        </video>
+        <audio id="waveCardAudio" preload="auto">
+            <source src="getwaveeditsound.m4a" type="audio/mp4">
+        </audio>
+        <a href="https://www.youtube.com/watch?v=vr9FLaC3BaI" target="_blank" class="tooltip-link-icon">
+            <img src="link.png" alt="Link">
+        </a>
+    </div>
+    
     <!-- Notification button prompt tooltip -->
     <div id="notificationPrompt" class="notification-prompt">Enable notification!</div>
     
@@ -336,6 +337,17 @@
             audio.loop = true;
         });
         
+        function updateTooltipPosition() {
+            const rect = waveCard.getBoundingClientRect();
+            const tooltipWidth = 400 * 0.7;
+            const tooltipHeight = 225 * 0.7;
+            
+            // Position above the card
+            const topPosition = rect.top - tooltipHeight - 16;
+            tooltip.style.top = Math.max(20, topPosition) + 'px';
+            tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+        }
+        
         let hoverTimeout;
         
         function hideTooltip() {
@@ -355,6 +367,7 @@
         waveCard.addEventListener('mouseenter', async () => {
             clearTimeout(hoverTimeout);
             isHovering = true;
+            updateTooltipPosition();
             tooltip.classList.add('visible');
             
             if (!isPlaying) {
