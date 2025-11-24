@@ -476,13 +476,17 @@ function displayMessage(data) {
             adminBadge = '<span class="admin-diamond">💎</span>';
         }
 
+        // Only mefisto can ban users (not other admins)
+        const canBan = isAdmin && currentUser && currentUser.nickname.toLowerCase() === 'mefisto';
+        const showBanButton = canBan && !isOwnMessage && !isMefisto;
+
         messageDiv.innerHTML = `
             ${avatarHTML}
             <div class="message-content">
                 <div class="message-header">
                     <span class="message-nickname">${escapeHtml(data.nickname)}${adminBadge}</span>
                     <span class="message-time">${formatTime(data.timestamp)}</span>
-                    ${isAdmin && !isOwnMessage ? `<button class="ban-button" onclick="banUser('${data.userId}', '${escapeHtml(data.nickname)}')">Ban</button>` : ''}
+                    ${showBanButton ? `<button class="ban-button" onclick="banUser('${data.userId}', '${escapeHtml(data.nickname)}')">Ban</button>` : ''}
                 </div>
                 <div class="message-text">${messageContent}</div>
             </div>
