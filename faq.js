@@ -15,4 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
             item.classList.toggle('active');
         });
     });
+
+    // Добавление кнопки downgrade в первый FAQ вопрос
+    const firstFaqAnswer = document.querySelector('.faq-item:first-child .faq-answer p');
+    if (firstFaqAnswer && firstFaqAnswer.textContent.includes('downgrading')) {
+        const downgradeBtn = document.createElement('a');
+        downgradeBtn.href = '/downgrade';
+        downgradeBtn.className = 'faq-downgrade-button';
+        downgradeBtn.textContent = 'DOWNGRADE!';
+        firstFaqAnswer.appendChild(downgradeBtn);
+    }
 });
