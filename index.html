@@ -11,7 +11,7 @@
     <div class="site-branding" id="siteBranding" data-tooltip="Click to copy!">wavestatus.com</div>
     <div class="container">
         <div class="header">
-            <img src="logo.png" alt="Wave Logo" class="logo">
+            <img src="wavenewlogo.png" alt="Wave Logo" class="logo">
             <h1><img src="wavetextlogo.webp" alt="WAVE" class="wave-title-logo"> Downtime Tracker</h1>
         </div>
         
@@ -82,7 +82,7 @@
         <!-- Chat Section -->
         <div class="chat-section">
             <div class="chat-header">
-                <h2>Community Chat</h2>
+                <h2>Community Chat <img src="tea.webp" alt="Tea" class="section-icon"></h2>
                 <div class="online-counter">
                     <div class="online-pulse"></div>
                     <span id="onlineCount">0</span> online
@@ -126,7 +126,7 @@
         
         <!-- FAQ Section -->
         <div class="faq-section">
-            <h2>Frequently Asked Questions</h2>
+            <h2>Frequently Asked Questions <img src="question.webp" alt="Question" class="section-icon"></h2>
             
             <div class="faq-list">
                 <div class="faq-item">
@@ -186,10 +186,111 @@
     <audio id="notificationAudio" preload="auto">
         <source src="notification.mp3" type="audio/mpeg">
     </audio>
+    
+    <!-- Video tooltip for wave-card -->
+    <div id="waveCardTooltip" class="wave-card-tooltip">
+        <video id="waveCardVideo" preload="auto" muted>
+            <source src="getwaveedit.mp4" type="video/mp4">
+        </video>
+        <audio id="waveCardAudio" preload="auto">
+            <source src="getwaveeditsound.m4a" type="audio/mp4">
+        </audio>
+    </div>
+    
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="script.js?v=1732237000"></script>
     <script src="chat.js?v=1732237000"></script>
     <script src="faq.js?v=1732237000"></script>
+    <script>
+        // Wave card video tooltip with synchronized audio
+        const waveCard = document.querySelector('.wave-card');
+        const tooltip = document.getElementById('waveCardTooltip');
+        const video = document.getElementById('waveCardVideo');
+        const audio = document.getElementById('waveCardAudio');
+        
+        let isHovering = false;
+        let isPlaying = false;
+        
+        // Set audio volume to 30% quieter (70% of original)
+        audio.volume = 0.7;
+        
+        // Ensure both media are loaded
+        Promise.all([
+            new Promise(resolve => {
+                if (video.readyState >= 2) resolve();
+                else video.addEventListener('loadeddata', resolve, { once: true });
+            }),
+            new Promise(resolve => {
+                if (audio.readyState >= 2) resolve();
+                else audio.addEventListener('loadeddata', resolve, { once: true });
+            })
+        ]).then(() => {
+            // Both media are ready
+            video.loop = true;
+            audio.loop = true;
+        });
+        
+        function updateTooltipPosition() {
+            const rect = waveCard.getBoundingClientRect();
+            const tooltipWidth = 400 * 0.7;
+            const tooltipHeight = 225 * 0.7;
+            
+            // Position above the card
+            tooltip.style.top = (rect.top - tooltipHeight - 12) + 'px';
+            tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+        }
+        
+        waveCard.addEventListener('mouseenter', async () => {
+            isHovering = true;
+            updateTooltipPosition();
+            tooltip.classList.add('visible');
+            
+            if (!isPlaying) {
+                try {
+                    // Start both video and audio together
+                    video.currentTime = 0;
+                    audio.currentTime = 0;
+                    
+                    await Promise.all([
+                        video.play(),
+                        audio.play()
+                    ]);
+                    
+                    isPlaying = true;
+                } catch (err) {
+                    console.log('Autoplay prevented:', err);
+                }
+            }
+        });
+        
+        waveCard.addEventListener('mouseleave', () => {
+            isHovering = false;
+            tooltip.classList.remove('visible');
+            
+            setTimeout(() => {
+                if (!isHovering && isPlaying) {
+                    video.pause();
+                    audio.pause();
+                    isPlaying = false;
+                }
+            }, 300);
+        });
+        
+        // Keep video and audio in sync
+        video.addEventListener('timeupdate', () => {
+            if (isPlaying && Math.abs(video.currentTime - audio.currentTime) > 0.3) {
+                audio.currentTime = video.currentTime;
+            }
+        });
+        
+        // Update position on scroll/resize
+        window.addEventListener('scroll', () => {
+            if (isHovering) updateTooltipPosition();
+        });
+        window.addEventListener('resize', () => {
+            if (isHovering) updateTooltipPosition();
+        });
+    </script>
     <script defer src="https://analytics.vercel.com/script.js"></script>
     <script defer src="https://speed-insights.vercel.com/script.js"></script>
 </body>
