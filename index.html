@@ -212,9 +212,11 @@
     
     <!-- Video tooltip for wave-card -->
     <div id="waveCardTooltip" class="wave-card-tooltip">
-        <video id="waveCardVideo" preload="auto" muted>
-            <source src="getwaveedit.mp4" type="video/mp4">
-        </video>
+        <a href="https://getwave.gg" target="_blank" class="tooltip-video-link">
+            <video id="waveCardVideo" preload="auto" muted>
+                <source src="getwaveedit.mp4" type="video/mp4">
+            </video>
+        </a>
         <audio id="waveCardAudio" preload="auto">
             <source src="getwaveeditsound.m4a" type="audio/mp4">
         </audio>
@@ -342,9 +344,18 @@
             const tooltipWidth = 400 * 0.7;
             const tooltipHeight = 225 * 0.7;
             
-            // Position above the card with gap
-            const topPosition = rect.top - tooltipHeight - 20;
-            tooltip.style.top = Math.max(20, topPosition) + 'px';
+            // Check if there's enough space above
+            const spaceAbove = rect.top;
+            const spaceBelow = window.innerHeight - rect.bottom;
+            
+            if (spaceAbove >= tooltipHeight + 30) {
+                // Position above the card
+                tooltip.style.top = (rect.top - tooltipHeight - 20) + 'px';
+            } else {
+                // Position below the card
+                tooltip.style.top = (rect.bottom + 20) + 'px';
+            }
+            
             tooltip.style.left = (rect.left + rect.width / 2) + 'px';
         }
         
