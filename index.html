@@ -195,6 +195,9 @@
         <audio id="waveCardAudio" preload="auto">
             <source src="getwaveeditsound.m4a" type="audio/mp4">
         </audio>
+        <a href="https://www.youtube.com/watch?v=vr9FLaC3BaI" target="_blank" class="tooltip-link-icon">
+            <img src="link.png" alt="Link">
+        </a>
     </div>
     
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -265,6 +268,24 @@
         });
         
         waveCard.addEventListener('mouseleave', () => {
+            isHovering = false;
+            
+            setTimeout(() => {
+                if (!isHovering && isPlaying) {
+                    tooltip.classList.remove('visible');
+                    video.pause();
+                    audio.pause();
+                    isPlaying = false;
+                }
+            }, 300);
+        });
+        
+        // Keep tooltip visible when hovering over it
+        tooltip.addEventListener('mouseenter', () => {
+            isHovering = true;
+        });
+        
+        tooltip.addEventListener('mouseleave', () => {
             isHovering = false;
             tooltip.classList.remove('visible');
             
