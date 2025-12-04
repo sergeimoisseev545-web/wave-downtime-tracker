@@ -20,7 +20,8 @@ let currentState = {
     lastDowntimeDuration: 0,
     longestDowntime: 0,
     savedLastDowntime: 0,
-    apiAvailable: true
+    apiAvailable: true,
+    previousRobloxVersion: 'version-e380c8edc8f6477c'
 };
 
 let notificationsEnabled = false;
@@ -80,7 +81,15 @@ async function loadSavedData() {
                 if (data.apiDownSince) {
                     currentState.apiDownSince = data.apiDownSince;
                 }
+                if (data.previousRobloxVersion) {
+                    currentState.previousRobloxVersion = data.previousRobloxVersion;
+                }
             }
+        }
+        
+        const savedPrevVersion = localStorage.getItem('previousRobloxVersion');
+        if (savedPrevVersion) {
+            currentState.previousRobloxVersion = savedPrevVersion;
         }
 
         updateStatsDisplay();
@@ -96,8 +105,11 @@ async function saveData() {
             savedLastDowntime: currentState.savedLastDowntime,
             lastKnownVersion: currentState.lastKnownVersion,
             isDown: currentState.isDown,
-            apiDownSince: currentState.apiDownSince
+            apiDownSince: currentState.apiDownSince,
+            previousRobloxVersion: currentState.previousRobloxVersion
         };
+        
+        localStorage.setItem('previousRobloxVersion', currentState.previousRobloxVersion);
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
 
@@ -376,7 +388,12 @@ async function updateUI(data) {
     }
 
     if (isCurrentlyDown && !currentState.isDown) {
-
+        // Save current Roblox version as previous before going down
+        if (robloxData && robloxData.Windows) {
+            currentState.previousRobloxVersion = robloxData.Windows;
+            localStorage.setItem('previousRobloxVersion', robloxData.Windows);
+        }
+        
         currentState.isDown = true;
         currentState.downSince = Date.now();
         currentState.version = data.version;

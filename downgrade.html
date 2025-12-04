@@ -420,13 +420,13 @@
 
             <ol class="downgrade-steps">
                 <li class="downgrade-step">
-                    Open <a href="https://getwave.gg" class="brand-link wave-link" target="_blank"><img src="wavebluelogo.webp" alt="Wave" class="brand-icon">Wave</a> → <span class="tooltip-text" style="--tooltip-image: url('gotosettings.png');">go to Settings</span> → <span class="tooltip-text" style="--tooltip-image: url('findRobloxVersion.png');">find Roblox Version</span> and change <code>production</code> to <code class="copyable-code" data-tooltip="Click to copy!">version-8e6e698468a04d3f</code>.
+                    Open <a href="https://getwave.gg" class="brand-link wave-link" target="_blank"><img src="wavebluelogo.webp" alt="Wave" class="brand-icon">Wave</a> → <span class="tooltip-text" style="--tooltip-image: url('gotosettings.png');">go to Settings</span> → <span class="tooltip-text" style="--tooltip-image: url('findRobloxVersion.png');">find Roblox Version</span> and change <code>production</code> to <code class="copyable-code" id="previousVersionCode" data-tooltip="Click to copy!">version-e380c8edc8f6477c</code>.
                 </li>
                 <li class="downgrade-step">
                     Restart <a href="https://getwave.gg" class="brand-link wave-link" target="_blank"><img src="wavebluelogo.webp" alt="Wave" class="brand-icon">Wave</a> — the version indicator on the main tab should no longer be red.
                 </li>
                 <li class="downgrade-step">
-                    Download the file from <a href="https://rdd.whatexpsare.online/?channel=LIVE&binaryType=WindowsPlayer&version=version-8e6e698468a04d3f" class="brand-link" style="color: rgb(34, 197, 94);" target="_blank"><img src="download.png" alt="Download" class="download-icon">Dev Announcements</a> and open it once it's done downloading.
+                    Download the file from <a href="#" id="downloadPreviousVersionLink" class="brand-link" style="color: rgb(34, 197, 94);" onclick="downloadPreviousVersion(); return false;"><img src="download.png" alt="Download" class="download-icon">Dev Announcements</a> and open it once it's done downloading.
                 </li>
                 <li class="downgrade-step">
                     Press <img src="windows.png" alt="Windows" class="windows-icon"> + <strong>R</strong>, type <code class="copyable-code" data-tooltip="Click to copy!">%localappdata%</code>, and hit Enter.
@@ -436,6 +436,9 @@
                 </li>
                 <li class="downgrade-step">
                     Paste the downloaded folder into the <a href="https://fishstrap.org" class="brand-link fishstrap-link" target="_blank"><img src="fishstrap.png" alt="Fishstrap" class="brand-icon">Fishstrap</a> folder and choose <strong>Replace the files in destination</strong> when prompted.
+                </li>
+                <li class="downgrade-step">
+                    If you want to use <strong>multi-instance</strong> or <strong>join private servers</strong>, press <img src="windows.png" alt="Windows" class="windows-icon"> + <strong>R</strong>, type <code class="copyable-code" data-tooltip="Click to copy!">%localappdata%</code>, and hit Enter. Navigate to <img src="Roblox.webp" alt="Roblox" class="brand-icon" style="width: 20px; height: 20px; vertical-align: middle;">Roblox → Versions and open the folder with random letters/numbers. Remove all files from it, then replace them with the downloaded folder contents.
                 </li>
             </ol>
 
@@ -474,6 +477,60 @@
     </div>
 
     <script>
+        const WEAO_DOMAINS = ['weao.gg', 'weao.xyz', 'whatexpsare.online', 'whatexploitsaretra.sh'];
+        let previousVersion = 'version-e380c8edc8f6477c';
+
+        async function fetchWithFallback(endpoint) {
+            const domains = [...WEAO_DOMAINS].sort(() => Math.random() - 0.5);
+            for (const domain of domains) {
+                try {
+                    const url = `https://${domain}${endpoint}`;
+                    const response = await fetch(url, {
+                        headers: { 'User-Agent': 'WEAO-3PService' }
+                    });
+                    if (response.status === 429) continue;
+                    if (!response.ok) continue;
+                    return await response.json();
+                } catch (error) {
+                    continue;
+                }
+            }
+            return null;
+        }
+
+        async function loadPreviousVersion() {
+            try {
+                const data = await fetchWithFallback('/api/versions/past');
+                if (data && data.Windows) {
+                    previousVersion = data.Windows;
+                    
+                    const versionCodeEl = document.getElementById('previousVersionCode');
+                    if (versionCodeEl) {
+                        versionCodeEl.textContent = previousVersion;
+                    }
+                    
+                    localStorage.setItem('previousRobloxVersion', previousVersion);
+                }
+            } catch (error) {
+                console.error('Failed to fetch previous version:', error);
+                const savedVersion = localStorage.getItem('previousRobloxVersion');
+                if (savedVersion) {
+                    previousVersion = savedVersion;
+                    const versionCodeEl = document.getElementById('previousVersionCode');
+                    if (versionCodeEl) {
+                        versionCodeEl.textContent = previousVersion;
+                    }
+                }
+            }
+        }
+
+        function downloadPreviousVersion() {
+            const channelName = 'LIVE';
+            const binaryType = 'WindowsPlayer';
+            const queryString = `?channel=${encodeURIComponent(channelName)}&binaryType=${encodeURIComponent(binaryType)}&version=${encodeURIComponent(previousVersion)}`;
+            window.open(`https://rdd.weao.gg/${queryString}`, '_blank');
+        }
+
         // Site branding copy functionality
         const siteBranding = document.getElementById('siteBranding');
         if (siteBranding) {
@@ -508,6 +565,9 @@
                 }
             });
         });
+
+        // Load previous version on page load
+        loadPreviousVersion();
     </script>
 </body>
 </html>
